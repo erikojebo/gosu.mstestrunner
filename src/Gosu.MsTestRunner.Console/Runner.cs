@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Gosu.MsTestRunner.Core.Config;
+using Gosu.MsTestRunner.Core.Runner;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -18,19 +19,23 @@ namespace Gosu.MsTestRunner.Console
                 return;
             }
 
+            RunnerConfiguration config;
+
             try
             {
                 var fileContents = File.ReadAllText(configPath);
-                var config = JsonConvert.DeserializeObject<RunnerConfiguration>(fileContents);
-
-                Run(config);
+                config = JsonConvert.DeserializeObject<RunnerConfiguration>(fileContents);
             }
             catch (Exception ex)
             {
                 System.Console.WriteLine("Could not parse configuration file.");
                 System.Console.WriteLine("Exception:");
                 System.Console.WriteLine(ex);
+
+                return;
             }
+
+            Run(config);
         }
 
         public static void Run(RunnerConfiguration config)
@@ -48,101 +53,28 @@ namespace Gosu.MsTestRunner.Console
 
             AppDomainSetup appDomainSetup = new AppDomainSetup
             {
-                ApplicationBase = assemblyBaseDirectory
+                ApplicationBase = assemblyBaseDirectory,
+                ConfigurationFile = assemblyConfiguration.Path + ".config"
             };
 
             AppDomain testDomain = AppDomain.CreateDomain($"{assemblyFileName}Domain", null, appDomainSetup);
 
-            testDomain.ExecuteAssembly(assemblyConfiguration.Path);
-
-            Assembly assembly;
+            var runner = (AssemblyRunner)testDomain.CreateInstanceFromAndUnwrap(
+                //typeof(AssemblyRunner).Assembly.FullName, 
+                typeof(AssemblyRunner).Assembly.Location,
+                typeof(AssemblyRunner).FullName);
 
             try
             {
-                assembly = Assembly.LoadFrom(assemblyConfiguration.Path);
+                runner.RunTests(assemblyConfiguration.Path);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.Console.WriteLine($"Failed to load assembly: {assemblyConfiguration.Path}");
-                System.Console.WriteLine("Exception:");
-                System.Console.WriteLine(ex);
-
-                return;
             }
-
-            var testClasses = assembly.GetTypes().Where(x => x.GetCustomAttribute<TestClassAttribute>() != null);
-
-            foreach (var testClass in testClasses)
+            finally
             {
-                var testMethods = testClass.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(x => x.GetCustomAttribute<TestMethodAttribute>() != null)
-                    .Where(x => x.GetCustomAttribute<IgnoreAttribute>() == null);
-
-                var testInitializeMethods =
-                    testClass.GetMethods().Where(x => x.GetCustomAttribute<TestInitializeAttribute>() != null)
-                    .ToList();
-
-                var testCleanupMethods =
-                    testClass.GetMethods().Where(x => x.GetCustomAttribute<TestCleanupAttribute>() != null)
-                    .ToList();
-
-                foreach (var testMethod in testMethods)
-                {
-                    var expectedExceptionAttribute = testMethod.GetCustomAttribute<ExpectedExceptionAttribute>();
-                    var testClassInstance = Activator.CreateInstance(testClass);
-
-                    foreach (var testInitializeMethod in testInitializeMethods)
-                    {
-                        testInitializeMethod.Invoke(testClassInstance, null);
-                    }
-
-                    try
-                    {
-                        testMethod.Invoke(testClassInstance, null);
-                    }
-                    catch (TargetInvocationException ex)
-                    {
-                        if (ex.InnerException == null || expectedExceptionAttribute == null)
-                            LogTestFailureException(testMethod, ex);
-
-                        var actualExceptionType = ex.InnerException.GetType();
-                        var expectedExceptionType = expectedExceptionAttribute.ExceptionType;
-
-                        var wasExceptionExpected =
-                                 expectedExceptionType == actualExceptionType ||
-                                 expectedExceptionAttribute.AllowDerivedTypes && actualExceptionType.IsSubclassOf(expectedExceptionType);
-
-                        if (!wasExceptionExpected)
-                        {
-                            LogTestFailureException(testMethod, ex);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogTestFailureException(testMethod, ex);
-                    }
-
-                    System.Console.Write(".");
-                    //System.Console.WriteLine($"{testMethod.Name}: Succeeded");
-
-                    foreach (var testCleanupMethod in testCleanupMethods)
-                    {
-                        testCleanupMethod.Invoke(testClassInstance, null);
-                    }
-                }
+                AppDomain.Unload(testDomain);
             }
-
-            AppDomain.Unload(testDomain);
-        }
-
-        private static void LogTestFailureException(MethodInfo testMethod, Exception ex)
-        {
-            System.Console.WriteLine();
-            System.Console.WriteLine($"{testMethod.Name}: Failed");
-            System.Console.WriteLine(ex.Message);
-            System.Console.WriteLine("Exception:");
-            System.Console.WriteLine(ex);
-            System.Console.WriteLine();
         }
     }
 }

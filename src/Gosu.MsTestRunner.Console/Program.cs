@@ -28,6 +28,7 @@ namespace Gosu.MsTestRunner.Console
             Runner.Run(configPath);
 
 #if DEBUG
+            System.Console.WriteLine();
             System.Console.WriteLine("Press any key to exit...");
             System.Console.Read();
 #endif
