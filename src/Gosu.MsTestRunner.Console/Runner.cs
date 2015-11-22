@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Gosu.MsTestRunner.Core.Config;
 using Gosu.MsTestRunner.Core.Runner;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
 namespace Gosu.MsTestRunner.Console
@@ -40,7 +38,7 @@ namespace Gosu.MsTestRunner.Console
 
         public static void Run(RunnerConfiguration config)
         {
-            foreach (var assemblyConfiguration in config.Assemblies)
+            foreach (var assemblyConfiguration in config.Assemblies.Where(x => x.Platform != "x86"))
             {
                 Run(assemblyConfiguration);
             }

@@ -1,16 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Gosu.MsTestRunner.Core.Config;
+using Gosu.MsTestRunner.Core.Listeners;
+using Gosu.MsTestRunner.Core.Listeners.Events;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gosu.MsTestRunner.Core.Runner
 {
     public class AssemblyRunner : MarshalByRefObject
     {
+        private List<ITestRunEventListener> _listeners;
+
+        public AssemblyRunner()
+        {
+            _listeners = new List<ITestRunEventListener>
+            {
+                new TestResultConsoleLogger(),
+            };
+        }
+
         public void RunTests(AssemblyConfiguration assemblyConfiguration)
         {
-            
+            RunTests(assemblyConfiguration.Path);
         }
 
         public void RunTests(string assemblyPath)
@@ -23,12 +37,12 @@ namespace Gosu.MsTestRunner.Core.Runner
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine($"Failed to load assembly: {assemblyPath}");
-                System.Console.WriteLine("Exception:");
-                System.Console.WriteLine(ex);
-
+                PublishEvent(x => x.OnAssemblyLoadFailed(assemblyPath, ex));
+                
                 return;
             }
+
+            PublishEvent(x => x.OnAssemblyTestRunStarting(assembly));
 
             var testClasses = assembly.GetTypes().Where(x => x.GetCustomAttribute<TestClassAttribute>() != null);
 
@@ -43,8 +57,6 @@ namespace Gosu.MsTestRunner.Core.Runner
                     .OrderBy(x => GetInheritanceHierarchyDepth(x.DeclaringType))
                     .ToList();
 
-                var className = testClass.Name;
-
                 var testCleanupMethods =
                     testClass.GetMethods().Where(x => x.GetCustomAttribute<TestCleanupAttribute>() != null)
                     .OrderBy(x => GetInheritanceHierarchyDepth(x.DeclaringType))
@@ -52,50 +64,70 @@ namespace Gosu.MsTestRunner.Core.Runner
 
                 foreach (var testMethod in testMethods)
                 {
-                    var expectedExceptionAttribute = testMethod.GetCustomAttribute<ExpectedExceptionAttribute>();
-                    var testClassInstance = Activator.CreateInstance(testClass);
-
-                    foreach (var testInitializeMethod in testInitializeMethods)
-                    {
-                        testInitializeMethod.Invoke(testClassInstance, null);
-                    }
-
-                    try
-                    {
-                        testMethod.Invoke(testClassInstance, null);
-                    }
-                    catch (TargetInvocationException ex)
-                    {
-                        if (ex.InnerException == null || expectedExceptionAttribute == null)
-                            LogTestFailureException(testMethod, ex);
-
-                        var actualExceptionType = ex.InnerException.GetType();
-                        var expectedExceptionType = expectedExceptionAttribute.ExceptionType;
-
-                        var wasExceptionExpected =
-                            expectedExceptionType == actualExceptionType ||
-                            expectedExceptionAttribute.AllowDerivedTypes &&
-                            actualExceptionType.IsSubclassOf(expectedExceptionType);
-
-                        if (!wasExceptionExpected)
-                        {
-                            LogTestFailureException(testMethod, ex);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogTestFailureException(testMethod, ex);
-                    }
-
-                    System.Console.Write(".");
-                    //System.Console.WriteLine($"{testMethod.Name}: Succeeded");
-
-                    foreach (var testCleanupMethod in testCleanupMethods)
-                    {
-                        testCleanupMethod.Invoke(testClassInstance, null);
-                    }
+                    RunTest(testMethod, testClass, testInitializeMethods, testCleanupMethods);
                 }
             }
+
+            PublishEvent(x => x.OnAssemblyTestRunFinished());
+        }
+
+        private void RunTest(MethodInfo testMethod, Type testClass, List<MethodInfo> testInitializeMethods, List<MethodInfo> testCleanupMethods)
+        {
+            var testClassInstance = Activator.CreateInstance(testClass);
+
+            foreach (var testInitializeMethod in testInitializeMethods)
+            {
+                testInitializeMethod.Invoke(testClassInstance, null);
+            }
+
+            try
+            {
+                testMethod.Invoke(testClassInstance, null);
+                PublishTestPassedEvent(testMethod);
+            }
+            catch (TargetInvocationException actualException)
+            {
+                if (WasExceptionExpected(testMethod, actualException))
+                {
+                    PublishTestPassedEvent(testMethod);
+                }
+                else
+                {
+                    PublishTestFailureEvent(testMethod, actualException);
+                }
+            }
+            catch (Exception ex)
+            {
+                PublishTestFailureEvent(testMethod, ex);
+            }
+
+            foreach (var testCleanupMethod in testCleanupMethods)
+            {
+                testCleanupMethod.Invoke(testClassInstance, null);
+            }
+        }
+
+        private static bool WasExceptionExpected(MethodInfo testMethod, TargetInvocationException actualException)
+        {
+            var expectedExceptionAttribute = testMethod.GetCustomAttribute<ExpectedExceptionAttribute>();
+
+            if (actualException.InnerException == null || expectedExceptionAttribute == null)
+                return false;
+
+            var actualExceptionType = actualException.InnerException.GetType();
+            var expectedExceptionType = expectedExceptionAttribute.ExceptionType;
+
+            var wasExceptionExpected =
+                expectedExceptionType == actualExceptionType ||
+                expectedExceptionAttribute.AllowDerivedTypes &&
+                actualExceptionType.IsSubclassOf(expectedExceptionType);
+
+            return wasExceptionExpected;
+        }
+
+        private void PublishTestPassedEvent(MethodInfo testMethod)
+        {
+            PublishEvent(x => x.OnTestPass(new TestPass(testMethod)));
         }
 
         private object GetInheritanceHierarchyDepth(Type arg, int startingDepth = 0)
@@ -108,14 +140,17 @@ namespace Gosu.MsTestRunner.Core.Runner
             return GetInheritanceHierarchyDepth(arg.BaseType, startingDepth + 1);
         }
 
-        private static void LogTestFailureException(MethodInfo testMethod, Exception ex)
+        private void PublishTestFailureEvent(MethodInfo testMethod, Exception ex)
         {
-            System.Console.WriteLine();
-            System.Console.WriteLine($"{testMethod.Name}: Failed");
-            System.Console.WriteLine(ex.Message);
-            System.Console.WriteLine("Exception:");
-            System.Console.WriteLine(ex);
-            System.Console.WriteLine();
+            PublishEvent(x => x.OnTestFailure(new TestFailure(testMethod, ex)));
+        }
+
+        private void PublishEvent(Action<ITestRunEventListener> eventPublishAction)
+        {
+            foreach (var eventListener in _listeners)
+            {
+                eventPublishAction(eventListener);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Gosu.MsTestRunner.Core.Config
     public class AssemblyConfiguration : MarshalByRefObject
     {
         public bool AllowParallel { get; set; }
-        public string Path { get; set; } 
+        public string Path { get; set; }
+        public string Platform { get; set; }
     }
 }

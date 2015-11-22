@@ -4,6 +4,6 @@ namespace Gosu.MsTestRunner.Core.Config
 {
     public class RunnerConfiguration
     {
-        public List<AssemblyConfiguration>  Assemblies { get; set; }
+        public List<AssemblyConfiguration> Assemblies { get; set; }
     }
 }
