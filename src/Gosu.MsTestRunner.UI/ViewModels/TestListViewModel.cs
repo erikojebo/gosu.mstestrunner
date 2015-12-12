@@ -17,8 +17,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
     {
         private readonly TestSessionContextLoader _testSessionContextLoader;
         private readonly UserSettingsService _settingsService;
+        private readonly TestCaseRunner _testRunner;
         private TestSessionContext _testSessionContext;
-        private TestCaseRunner _testRunner;
 
         public TestListViewModel()
         {
@@ -32,16 +32,39 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             
             ConfigFilePath = _settingsService.LastConfigFilePath;
 
-            if (!string.IsNullOrWhiteSpace(ConfigFilePath))
-            {
-                InitializeTestList();
-            }
+            _testSessionContextLoader.ProgressChanged += OnTestSessionContextLoaderProgressChanged;
+        }
+
+        private void OnTestSessionContextLoaderProgressChanged(int loadedAssemblyCount, int totalAssemblyCount)
+        {
+            Status = loadedAssemblyCount == totalAssemblyCount ? "Ready" : "Loading tests...";
+
+            ProgressMax = totalAssemblyCount;
+            ProgressValue = loadedAssemblyCount;
         }
 
         public string Log
         {
             get { return Get(() => Log); }
             set { Set(() => Log, value); }
+        }
+
+        public string Status
+        {
+            get { return Get(() => Status); }
+            set { Set(() => Status, value); }
+        }
+
+        public int ProgressMax
+        {
+            get { return Get(() => ProgressMax); }
+            set { Set(() => ProgressMax, value); }
+        }
+
+        public int ProgressValue
+        {
+            get { return Get(() => ProgressValue); }
+            set { Set(() => ProgressValue, value); }
         }
 
         public string ConfigFilePath
@@ -72,6 +95,11 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public async Task InitializeTestList()
         {
+            if (string.IsNullOrWhiteSpace(ConfigFilePath))
+            {
+                return;
+            }
+
             TestGroups.Clear();
             
             if (_testSessionContext != null)

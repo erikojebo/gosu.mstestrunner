@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Gosu.MsTestRunner.Core.Config;
 using Gosu.MsTestRunner.Core.Exceptions;
 using Gosu.MsTestRunner.Core.Extensions;
 using Gosu.MsTestRunner.Core.Listeners;
 using Gosu.MsTestRunner.Core.Runner;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gosu.MsTestRunner.Core.Loading
 {
+    public delegate void TestSessionContextLoadProgressChangedEventHandler(int loadedAssemblyCount, int totalAssemblyCount);
+
     public class TestSessionContextLoader
     {
         private readonly ConfigFileLoader _configLoader;
@@ -21,6 +21,8 @@ namespace Gosu.MsTestRunner.Core.Loading
         {
             _configLoader = new ConfigFileLoader(logger);
         }
+
+        public event TestSessionContextLoadProgressChangedEventHandler ProgressChanged = (x, y) => { };
 
         public async Task<TestSessionContext> Load(string configFilePath)
         {
@@ -44,11 +46,18 @@ namespace Gosu.MsTestRunner.Core.Loading
         {
             var testSessionContext = new TestSessionContext();
 
-            foreach (var assemblyConfiguration in configuration.Assemblies.Where(x => x.Platform != "x86"))
+            var assemblyConfigurations = configuration.Assemblies.Where(x => x.Platform != "x86").ToList();
+
+            ProgressChanged(0, assemblyConfigurations.Count);
+
+            for (int i = 0; i < assemblyConfigurations.Count; i++)
             {
+                var assemblyConfiguration = assemblyConfigurations[i];
                 var assemblyTestCases = Load(assemblyConfiguration);
 
                 testSessionContext.AddTestCases(assemblyTestCases);
+
+                ProgressChanged(i + 1, assemblyConfigurations.Count);
             }
 
             return testSessionContext;

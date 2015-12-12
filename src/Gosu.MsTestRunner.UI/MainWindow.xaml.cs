@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using Gosu.MsTestRunner.UI.ViewModels;
 using Microsoft.Win32;
@@ -15,12 +16,19 @@ namespace Gosu.MsTestRunner.UI
 
             DataContext = new TestListViewModel();
 
+            Loaded += MainWindow_Loaded;
+
             LogScrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.InitializeTestList();
         }
 
         internal TestListViewModel ViewModel => DataContext as TestListViewModel;
 
-        private void OnBrowseConfigFileClick(object sender, RoutedEventArgs e)
+        private async void OnBrowseConfigFileClick(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog
             {
@@ -33,7 +41,7 @@ namespace Gosu.MsTestRunner.UI
             if (result == true)
             {
                 ViewModel.ConfigFilePath = fileDialog.FileName;
-                ViewModel.InitializeTestList();
+                await ViewModel.InitializeTestList();
             }
         }
 
