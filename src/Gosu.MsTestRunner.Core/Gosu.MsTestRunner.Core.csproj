@@ -38,6 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,15 +53,33 @@
   <ItemGroup>
     <Compile Include="Config\AssemblyConfiguration.cs" />
     <Compile Include="Config\RunnerConfiguration.cs" />
+    <Compile Include="Exceptions\GosuMsTestRunnerException.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Listeners\Events\EventAggregator.cs" />
     <Compile Include="Listeners\Events\TestFailure.cs" />
     <Compile Include="Listeners\Events\TestPass.cs" />
     <Compile Include="Listeners\Events\TestRunEvent.cs" />
+    <Compile Include="Listeners\ILogger.cs" />
     <Compile Include="Listeners\TestResultConsoleLogger.cs" />
     <Compile Include="Listeners\ITestRunEventListener.cs" />
+    <Compile Include="Loading\ConfigFileLoader.cs" />
+    <Compile Include="Listeners\Events\IEventAggregator.cs" />
+    <Compile Include="Loading\ConfigFileParseResult.cs" />
+    <Compile Include="Loading\TestSessionContextLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner\AssemblyRunner.cs" />
+    <Compile Include="Runner\AssemblyTestCaseLoader.cs" />
+    <Compile Include="Runner\TestCase.cs" />
+    <Compile Include="Runner\TestCaseRunner.cs" />
+    <Compile Include="Runner\TestResult.cs" />
+    <Compile Include="Runner\TestSessionContext.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Context\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

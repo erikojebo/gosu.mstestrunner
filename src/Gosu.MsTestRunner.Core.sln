@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gosu.MsTestRunner.Core", "Gosu.MsTestRunner.Core\Gosu.MsTestRunner.Core.csproj", "{9253573D-08A4-40AF-947B-CC90F780BEA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gosu.MsTestRunner.Console", "Gosu.MsTestRunner.Console\Gosu.MsTestRunner.Console.csproj", "{2C70F2E7-93EA-49F5-80A5-AF7059BF8221}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gosu.MsTestRunner.UI", "Gosu.MsTestRunner.UI\Gosu.MsTestRunner.UI.csproj", "{97676F4E-108D-452F-A1FB-77225C92D2E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2C70F2E7-93EA-49F5-80A5-AF7059BF8221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C70F2E7-93EA-49F5-80A5-AF7059BF8221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C70F2E7-93EA-49F5-80A5-AF7059BF8221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97676F4E-108D-452F-A1FB-77225C92D2E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97676F4E-108D-452F-A1FB-77225C92D2E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97676F4E-108D-452F-A1FB-77225C92D2E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97676F4E-108D-452F-A1FB-77225C92D2E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

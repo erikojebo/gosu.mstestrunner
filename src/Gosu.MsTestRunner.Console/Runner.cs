@@ -9,32 +9,32 @@ namespace Gosu.MsTestRunner.Console
 {
     public class Runner
     {
-        public static void Run(string configPath)
-        {
-            if (!File.Exists(configPath))
+            public static void Run(string configPath)
             {
-                System.Console.WriteLine("No configuration file could be found at the specified path");
-                return;
+                if (!File.Exists(configPath))
+                {
+                    System.Console.WriteLine("No configuration file could be found at the specified path");
+                    return;
+                }
+
+                RunnerConfiguration config;
+
+                try
+                {
+                    var fileContents = File.ReadAllText(configPath);
+                    config = JsonConvert.DeserializeObject<RunnerConfiguration>(fileContents);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Could not parse configuration file.");
+                    System.Console.WriteLine("Exception:");
+                    System.Console.WriteLine(ex);
+
+                    return;
+                }
+
+                Run(config);
             }
-
-            RunnerConfiguration config;
-
-            try
-            {
-                var fileContents = File.ReadAllText(configPath);
-                config = JsonConvert.DeserializeObject<RunnerConfiguration>(fileContents);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine("Could not parse configuration file.");
-                System.Console.WriteLine("Exception:");
-                System.Console.WriteLine(ex);
-
-                return;
-            }
-
-            Run(config);
-        }
 
         public static void Run(RunnerConfiguration config)
         {
@@ -58,7 +58,6 @@ namespace Gosu.MsTestRunner.Console
             AppDomain testDomain = AppDomain.CreateDomain($"{assemblyFileName}Domain", null, appDomainSetup);
 
             var runner = (AssemblyRunner)testDomain.CreateInstanceFromAndUnwrap(
-                //typeof(AssemblyRunner).Assembly.FullName, 
                 typeof(AssemblyRunner).Assembly.Location,
                 typeof(AssemblyRunner).FullName);
 
