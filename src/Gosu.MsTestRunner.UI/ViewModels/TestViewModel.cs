@@ -20,6 +20,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             set { Set(() => WasSuccessful, value); }
         }
 
+        public bool? WasIgnored
+        {
+            get { return Get(() => WasIgnored); }
+            set { Set(() => WasIgnored, value); }
+        }
+
         public bool? IsTestExecuting
         {
             get { return Get(() => IsTestExecuting); }
@@ -35,12 +41,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public string Name { get; }
         public string Description { get; }
         public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
-
-        public bool? WasIgnored
-        {
-            get { return Get(() => WasIgnored); }
-            set { Set(() => WasIgnored, value); }
-        }
+        public bool HasExecuted => WasSuccessful != null;
 
         public void OnTestCaseFinished(TestResult testResult)
         {
@@ -61,5 +62,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 IsTestExecuting = true;
             });
         }
+
+        public static string IsTestExecutingPropertyName => nameof(IsTestExecuting);
     }
 }

@@ -19,6 +19,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         private readonly UserSettingsService _settingsService;
         private readonly TestCaseRunner _testRunner;
         private TestSessionContext _testSessionContext;
+        private Dictionary<Guid, TestViewModel> _executingTestViewModelsByTestCaseId;
 
         public TestListViewModel()
         {
@@ -34,6 +35,9 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             ConfigFilePath = _settingsService.LastConfigFilePath;
 
             _testSessionContextLoader.ProgressChanged += OnTestSessionContextLoaderProgressChanged;
+
+            _testRunner.TestCaseFinished += OnTestCaseFinished;
+            _testRunner.TestCaseStarting += OnTestCaseStarting;
         }
 
         private void OnTestSessionContextLoaderProgressChanged(int loadedAssemblyCount, int totalAssemblyCount)
@@ -102,6 +106,11 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 return;
             }
 
+            foreach (var testGroupViewModel in TestGroups)
+            {
+                
+            }
+
             TestGroups.Clear();
             
             if (_testSessionContext != null)
@@ -117,7 +126,15 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 var groupViewModel = new TestGroupViewModel(group.Key, testCases);
 
                 TestGroups.Add(groupViewModel);
+
+                groupViewModel.PropertyChanged += OnGroupViewModelPropertyChanged;
             }
+        }
+
+        private void OnGroupViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == TestGroupViewModel.ExecutedTestCaseCountPropertyName && _executingTestViewModelsByTestCaseId != null)
+                ProgressValue = _executingTestViewModelsByTestCaseId.Values.Count(x => x.HasExecuted);
         }
 
         private async Task ExecuteAllTests()
@@ -139,15 +156,25 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         private async Task ExecuteTests(List<TestViewModel> testViewModels)
         {
-            var testViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
+            _executingTestViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
+
+            ProgressMax = _executingTestViewModelsByTestCaseId.Count;
 
             var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
 
-            _testRunner.TestCaseFinished +=
-                (testCase, testResult) => testViewModelsByTestCaseId[testCase.Id].OnTestCaseFinished(testResult);
-            _testRunner.TestCaseStarting += testCase => testViewModelsByTestCaseId[testCase.Id].OnTestCaseStarting();
-
             await _testRunner.Run(testCasesToRun);
+
+            _executingTestViewModelsByTestCaseId = null;
+        }
+
+        private void OnTestCaseStarting(TestCase testCase)
+        {
+            _executingTestViewModelsByTestCaseId[testCase.Id].OnTestCaseStarting();
+        }
+
+        private void OnTestCaseFinished(TestCase testCase, TestResult testResult)
+        {
+            _executingTestViewModelsByTestCaseId[testCase.Id].OnTestCaseFinished(testResult);
         }
 
         public void OutputLine(string message, params object[] formatParams)

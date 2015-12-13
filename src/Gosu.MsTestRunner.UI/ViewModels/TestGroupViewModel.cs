@@ -27,10 +27,13 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         private void OnTestViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            FirePropertyChanged(nameof(SuccessfulTestCaseCount));
-            FirePropertyChanged(nameof(FailedTestCaseCount));
-            FirePropertyChanged(nameof(IgnoredTestCaseCount));
-            FirePropertyChanged(nameof(ExecutedTestCaseCount));
+            if (e.PropertyName == TestViewModel.IsTestExecutingPropertyName)
+            {
+                FirePropertyChanged(nameof(SuccessfulTestCaseCount));
+                FirePropertyChanged(nameof(FailedTestCaseCount));
+                FirePropertyChanged(nameof(IgnoredTestCaseCount));
+                FirePropertyChanged(nameof(ExecutedTestCaseCount));
+            }
         }
 
         private void ToggleExpandCollapse()
@@ -41,7 +44,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public int SuccessfulTestCaseCount => Tests.Count(x => x.WasSuccessful == true);
         public int FailedTestCaseCount => Tests.Count(x => x.WasSuccessful == false);
         public int IgnoredTestCaseCount => Tests.Count(x => x.WasIgnored == true);
-        public int ExecutedTestCaseCount => Tests.Count(x => x.WasSuccessful != null);
+        public int ExecutedTestCaseCount => Tests.Count(x => x.HasExecuted);
+
+        public static string SuccessfulTestCaseCountPropertyName => nameof(SuccessfulTestCaseCount);
+        public static string FailedTestCaseCountPropertyName => nameof(FailedTestCaseCount);
+        public static string IgnoredTestCaseCountPropertyName => nameof(IgnoredTestCaseCount);
+        public static string ExecutedTestCaseCountPropertyName => nameof(ExecutedTestCaseCount);
 
         public DelegateCommand ToggleExpandCollapseCommand { get; }
 
