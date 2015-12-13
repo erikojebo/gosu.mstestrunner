@@ -1,8 +1,10 @@
 ﻿<Application x:Class="Gosu.MsTestRunner.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Gosu.MsTestRunner.UI.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:ReducedNumericValueConverter x:Key="ReducedNumericValueConverter"/>
     </Application.Resources>
 </Application>

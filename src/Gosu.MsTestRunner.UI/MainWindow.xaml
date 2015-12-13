@@ -81,13 +81,15 @@
                 <Button Command="{Binding InitializeTestListCommand}">Reload</Button>
             
                 <Button Command="{Binding ExecuteAllTestsCommand}">Run all tests</Button>
+                <Button Command="{Binding ExecuteSelectedTestsCommand}">Run selected tests</Button>
             </StackPanel>
         
             <!-- Test groups -->
             <ScrollViewer 
                 Grid.Column="1"
                 VerticalScrollBarVisibility="Auto" 
-                HorizontalScrollBarVisibility="Auto">
+                HorizontalScrollBarVisibility="Disabled"
+                x:Name="ContainerScrollViewer">
             
                 <ItemsControl
                     ItemsSource="{Binding TestGroups}"
@@ -143,7 +145,8 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ScrollViewer.CanContentScroll="False">
+                                ScrollViewer.CanContentScroll="False"
+                                SelectionMode="Extended">
 
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="ListBoxItem">
@@ -165,6 +168,9 @@
                                                 <Setter Property="Foreground" Value="#8a6d3b" />
                                             </DataTrigger>
                                         </Style.Triggers>
+                                        <Style.Setters>
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                        </Style.Setters>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
@@ -172,15 +178,14 @@
                                         <Border BorderThickness="0 0 0 0" BorderBrush="#efefef">
                                             <!-- Test content -->
                                             <Grid Margin="2">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
 
-                                                <StackPanel Orientation="Horizontal" Grid.Row="0">
-                                                    <TextBlock Text="{Binding Name}" FontSize="13" />
-                                                </StackPanel>
+                                                <TextBlock 
+                                                    Text="{Binding Name}" 
+                                                    TextTrimming="CharacterEllipsis" 
+                                                    FontSize="13"
+                                                    MaxWidth="{Binding Path=ActualWidth, ElementName=ContainerScrollViewer, Converter={StaticResource ReducedNumericValueConverter}, ConverterParameter=50}"
+                                                    HorizontalAlignment="Left"
+                                                    />
 
                                                 <!--<Button Grid.Row="0" Command="{Binding ExecuteCommand}"
                                                         HorizontalAlignment="Right"

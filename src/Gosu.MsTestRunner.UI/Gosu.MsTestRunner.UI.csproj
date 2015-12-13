@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\ReducedNumericValueConverter.cs" />
     <Compile Include="Infrastructure\ProgressBarBehaviours.cs" />
     <Compile Include="Mvvm\AsyncDelegateCommand.cs" />
     <Compile Include="ViewModels\TestGroupViewModel.cs" />

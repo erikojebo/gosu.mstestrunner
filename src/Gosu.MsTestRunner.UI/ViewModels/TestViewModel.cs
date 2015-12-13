@@ -26,6 +26,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             set { Set(() => IsTestExecuting, value); }
         }
 
+        public bool IsSelected
+        {
+            get { return Get(() => IsSelected); }
+            set { Set(() => IsSelected, value); }
+        }
+
         public string Name { get; }
         public string Description { get; }
         public bool HasDescription => !string.IsNullOrWhiteSpace(Description);

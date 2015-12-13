@@ -28,6 +28,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             InitializeTestListCommand = new AsyncDelegateCommand(InitializeTestList);
             ExecuteAllTestsCommand = new AsyncDelegateCommand(ExecuteAllTests);
+            ExecuteSelectedTestsCommand = new AsyncDelegateCommand(ExecuteSelectedTests);
             TestGroups = new ObservableCollection<TestGroupViewModel>();
             
             ConfigFilePath = _settingsService.LastConfigFilePath;
@@ -92,6 +93,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public ObservableCollection<TestGroupViewModel> TestGroups { get; }
         public AsyncDelegateCommand InitializeTestListCommand { get; }
         public AsyncDelegateCommand ExecuteAllTestsCommand { get; }
+        public AsyncDelegateCommand ExecuteSelectedTestsCommand { get; }
 
         public async Task InitializeTestList()
         {
@@ -121,11 +123,28 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         private async Task ExecuteAllTests()
         {
             var testViewModels = TestGroups.SelectMany(x => x.Tests).ToList();
-            var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
 
+            await ExecuteTests(testViewModels);
+        }
+
+        private async Task ExecuteSelectedTests()
+        {
+            var testViewModels = TestGroups
+                .SelectMany(x => x.Tests)
+                .Where(x => x.IsSelected)
+                .ToList();
+
+            await ExecuteTests(testViewModels);
+        }
+
+        private async Task ExecuteTests(List<TestViewModel> testViewModels)
+        {
             var testViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
 
-            _testRunner.TestCaseFinished += (testCase, testResult) => testViewModelsByTestCaseId[testCase.Id].OnTestCaseFinished(testResult);
+            var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
+
+            _testRunner.TestCaseFinished +=
+                (testCase, testResult) => testViewModelsByTestCaseId[testCase.Id].OnTestCaseFinished(testResult);
             _testRunner.TestCaseStarting += testCase => testViewModelsByTestCaseId[testCase.Id].OnTestCaseStarting();
 
             await _testRunner.Run(testCasesToRun);
