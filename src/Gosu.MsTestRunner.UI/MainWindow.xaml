@@ -51,7 +51,8 @@
                     DockPanel.Dock="Right" 
                     Maximum="{Binding Path=ProgressMax}"
                     Value="{Binding Path=ProgressValue}" 
-                    infrastructure:ProgressBarBehaviours.StopAnimationOnCompletion="True" />
+                    infrastructure:ProgressBarBehaviours.StopAnimationOnCompletion="True"
+                    IsIndeterminate="{Binding Path=IsProgressIndeterminate}" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=Status}" />
@@ -163,10 +164,10 @@
                                                 <Setter Property="Background" Value="#ececec" />
                                                 <Setter Property="Foreground" Value="#a0a0a0" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
+                                            <!--<DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
                                                 <Setter Property="Background" Value="#fcf8e3" />
                                                 <Setter Property="Foreground" Value="#8a6d3b" />
-                                            </DataTrigger>
+                                            </DataTrigger>-->
                                         </Style.Triggers>
                                         <Style.Setters>
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>

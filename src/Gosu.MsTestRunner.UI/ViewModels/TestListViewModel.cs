@@ -72,6 +72,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             set { Set(() => ProgressValue, value); }
         }
 
+        public bool IsProgressIndeterminate
+        {
+            get { return Get(() => IsProgressIndeterminate); }
+            set { Set(() => IsProgressIndeterminate, value); }
+        }
+
         public string ConfigFilePath
         {
             get { return Get(() => ConfigFilePath); }
@@ -108,7 +114,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             foreach (var testGroupViewModel in TestGroups)
             {
-                
+                testGroupViewModel.PropertyChanged -= OnGroupViewModelPropertyChanged;
             }
 
             TestGroups.Clear();
@@ -156,8 +162,14 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         private async Task ExecuteTests(List<TestViewModel> testViewModels)
         {
+            foreach (var testViewModel in testViewModels)
+            {
+                testViewModel.ResetResult();
+            }
+
             _executingTestViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
 
+            IsProgressIndeterminate = true;
             ProgressMax = _executingTestViewModelsByTestCaseId.Count;
 
             var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
@@ -174,6 +186,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         private void OnTestCaseFinished(TestCase testCase, TestResult testResult)
         {
+            InvokeUIAction(() => { IsProgressIndeterminate = false; });
+
             _executingTestViewModelsByTestCaseId[testCase.Id].OnTestCaseFinished(testResult);
         }
 

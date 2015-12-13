@@ -64,5 +64,10 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         }
 
         public static string IsTestExecutingPropertyName => nameof(IsTestExecuting);
+
+        public void ResetResult()
+        {
+            WasSuccessful = null;
+        }
     }
 }
