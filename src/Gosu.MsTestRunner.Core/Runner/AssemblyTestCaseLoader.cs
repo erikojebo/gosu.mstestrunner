@@ -33,8 +33,7 @@ namespace Gosu.MsTestRunner.Core.Runner
             foreach (var testClass in testClasses)
             {
                 var testMethods = testClass.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(x => x.GetCustomAttribute<TestMethodAttribute>() != null)
-                    .Where(x => x.GetCustomAttribute<IgnoreAttribute>() == null);
+                    .Where(x => x.GetCustomAttribute<TestMethodAttribute>() != null);
 
                 var testInitializeMethods =
                     testClass.GetMethods().Where(x => x.GetCustomAttribute<TestInitializeAttribute>() != null)

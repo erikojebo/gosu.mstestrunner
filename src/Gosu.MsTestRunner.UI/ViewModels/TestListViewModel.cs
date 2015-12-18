@@ -38,6 +38,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             _testRunner.TestCaseFinished += OnTestCaseFinished;
             _testRunner.TestCaseStarting += OnTestCaseStarting;
+            IsProgressIndeterminate = true;
         }
 
         private void OnTestSessionContextLoaderProgressChanged(int loadedAssemblyCount, int totalAssemblyCount)
@@ -169,10 +170,11 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             _executingTestViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
 
-            IsProgressIndeterminate = true;
             ProgressMax = _executingTestViewModelsByTestCaseId.Count;
 
             var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
+
+            IsProgressIndeterminate = true;
 
             await _testRunner.Run(testCasesToRun);
 

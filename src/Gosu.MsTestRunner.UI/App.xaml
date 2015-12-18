@@ -6,5 +6,10 @@
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ReducedNumericValueConverter x:Key="ReducedNumericValueConverter"/>
+
+        <BitmapImage x:Key="SuccessIcon" UriSource="/Icons/success.png" />
+        <BitmapImage x:Key="FailIcon" UriSource="/Icons/fail.png" />
+        <BitmapImage x:Key="IgnoredIcon" UriSource="/Icons/ignored.png" />
+        <BitmapImage x:Key="WarningIcon" UriSource="/Icons/warning.png" />
     </Application.Resources>
 </Application>

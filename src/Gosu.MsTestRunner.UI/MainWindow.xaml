@@ -49,10 +49,11 @@
                     Width="300" 
                     Margin="0 0 5 0"
                     DockPanel.Dock="Right" 
-                    Maximum="{Binding Path=ProgressMax}"
-                    Value="{Binding Path=ProgressValue}" 
+                    Maximum="{Binding Path=ProgressMax, Mode=OneWay}"
+                    Value="{Binding Path=ProgressValue, Mode=OneWay}" 
                     infrastructure:ProgressBarBehaviours.StopAnimationOnCompletion="True"
-                    IsIndeterminate="{Binding Path=IsProgressIndeterminate}" />
+                    />
+                
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=Status}" />
@@ -151,7 +152,19 @@
 
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="ListBoxItem">
+                                        <Style.Resources>
+                                            <!-- Background for Selected ListViewItem -->
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#ececec"/>
+                                        </Style.Resources>
+                                        
                                         <Style.Triggers>
+
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                                <Setter Property="BorderBrush" Value="#aaa" />
+                                                <Setter Property="Foreground" Value="Black" />
+                                            </Trigger>
+                                            
                                             <DataTrigger Binding="{Binding WasSuccessful}" Value="True">
                                                 <Setter Property="Background" Value="#dff0d8" />
                                                 <Setter Property="Foreground" Value="#3c763d" />
@@ -164,13 +177,17 @@
                                                 <Setter Property="Background" Value="#ececec" />
                                                 <Setter Property="Foreground" Value="#a0a0a0" />
                                             </DataTrigger>
-                                            <!--<DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
+                                            
+                                                
+                                                <!--<DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
                                                 <Setter Property="Background" Value="#fcf8e3" />
                                                 <Setter Property="Foreground" Value="#8a6d3b" />
                                             </DataTrigger>-->
                                         </Style.Triggers>
                                         <Style.Setters>
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                            <Setter Property="BorderThickness" Value="3 0 0 0"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
                                         </Style.Setters>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
@@ -178,8 +195,29 @@
                                     <DataTemplate>
                                         <Border BorderThickness="0 0 0 0" BorderBrush="#efefef">
                                             <!-- Test content -->
-                                            <Grid Margin="2">
+                                            <StackPanel Margin="2" Orientation="Horizontal">
 
+                                                <StackPanel Orientation="Horizontal" MinWidth="30">
+                                                
+                                                    <StackPanel.Resources>
+                                                        <Style TargetType="Image">
+                                                            <Style.Setters>
+                                                                <Setter Property="Height" Value="15" />
+                                                            </Style.Setters>
+                                                        </Style>
+                                                    </StackPanel.Resources>
+                                                    
+                                                    <Image Source="{StaticResource SuccessIcon}" 
+                                                           Visibility="{Binding Path=WasSuccessful, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                
+                                                    <Image Source="{StaticResource FailIcon}" 
+                                                           Visibility="{Binding Path=WasFailure, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                
+                                                    <Image Source="{StaticResource IgnoredIcon}" 
+                                                           Visibility="{Binding Path=WasIgnored, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                
+                                                </StackPanel>
+                                                
                                                 <TextBlock 
                                                     Text="{Binding Name}" 
                                                     TextTrimming="CharacterEllipsis" 
@@ -187,28 +225,8 @@
                                                     MaxWidth="{Binding Path=ActualWidth, ElementName=ContainerScrollViewer, Converter={StaticResource ReducedNumericValueConverter}, ConverterParameter=50}"
                                                     HorizontalAlignment="Left"
                                                     />
-
-                                                <!--<Button Grid.Row="0" Command="{Binding ExecuteCommand}"
-                                                        HorizontalAlignment="Right"
-                                                        Margin="0 3 0 0">
-                                                    Run
-                                                </Button>
-
-                                                <ProgressBar
-                                                    Grid.Row="0"
-                                                    Width="100"
-                                                    Height="15"
-                                                    Margin="0 0 150 0"
-                                                    IsIndeterminate="{Binding IsTestProgressIndeterminate}"
-                                                    Value="{Binding TestProgressPercentageValue}"
-                                                    Maximum="100"
-                                                    HorizontalAlignment="Right"
-                                                    Visibility="{Binding IsTestExecuting, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-                                                <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="12"
-                                                           Visibility="{Binding HasDescription, Converter={StaticResource BoolToVisibilityConverter}}" />-->
-
-                                            </Grid>
+                                                
+                                            </StackPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

@@ -17,7 +17,21 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public bool? WasSuccessful
         {
             get { return Get(() => WasSuccessful); }
-            set { Set(() => WasSuccessful, value); }
+            set
+            {
+                Set(() => WasSuccessful, value);
+
+                if (value != null)
+                {
+                    WasFailure = !value.Value;
+                }
+            }
+        }
+
+        public bool? WasFailure
+        {
+            get { return Get(() => WasFailure); }
+            private set { Set(() => WasFailure, value); }
         }
 
         public bool? WasIgnored
