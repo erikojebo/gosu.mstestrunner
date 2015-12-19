@@ -13,5 +13,6 @@
         <BitmapImage x:Key="WarningIcon" UriSource="/Icons/warning.png" />
         <BitmapImage x:Key="PlayIcon" UriSource="/Icons/arrow-right.png" />
         <BitmapImage x:Key="PlayParallelIcon" UriSource="/Icons/arrow-right-double.png" />
+        <BitmapImage x:Key="HourGlassIcon" UriSource="/Icons/hourglass.png" />
     </Application.Resources>
 </Application>

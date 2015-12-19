@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gosu.MsTestRunner.DebugTestAssembly
@@ -72,6 +73,19 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
         public void CamelCaseTestName()
         {
             Assert.IsTrue(true);
+        }
+
+
+        [TestMethod]
+        public void Slow_test_1()
+        {
+            Thread.Sleep(5000);
+        }
+
+        [TestMethod]
+        public void Slow_test_2()
+        {
+            Thread.Sleep(4000);
         }
     }
 }

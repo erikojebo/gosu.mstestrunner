@@ -236,6 +236,9 @@
                                                         </Style>
                                                     </StackPanel.Resources>
                                                     
+                                                    <Image Source="{StaticResource HourGlassIcon}" 
+                                                           Visibility="{Binding Path=IsTestExecuting, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                
                                                     <Image Source="{StaticResource SuccessIcon}" 
                                                            Visibility="{Binding Path=WasSuccessful, Converter={StaticResource BoolToVisibilityConverter}}" />
                                                 
