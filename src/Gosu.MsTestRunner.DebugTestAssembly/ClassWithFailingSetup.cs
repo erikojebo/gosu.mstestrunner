@@ -47,5 +47,27 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
             if (_failTearDown)
                 throw new InvalidOperationException("Configured to fail in the tear down");
         }
+
+        [TestCategory("TestCategory1")]
+        [TestCategory("TestCategory2")]
+        [TestMethod]
+        public void Test_with_category_1_and_2()
+        {
+            Assert.AreEqual(2, 2);
+        }
+
+        [TestCategory("TestCategory1")]
+        [TestMethod]
+        public void Test_with_category_1()
+        {
+            Assert.AreEqual(2, 2);
+        }
+
+        [TestCategory("TestCategory2")]
+        [TestMethod]
+        public void Test_with_category_2()
+        {
+            Assert.AreEqual(2, 2);
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Windows;
 using Gosu.MsTestRunner.Core.Listeners;
 using Gosu.MsTestRunner.Core.Loading;
 using Gosu.MsTestRunner.Core.Runner;
+using Gosu.MsTestRunner.UI.Extensions;
 using Gosu.MsTestRunner.UI.Infrastructure;
 using Gosu.MsTestRunner.UI.Mvvm;
 
@@ -32,6 +33,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             ExecuteSelectedTestsCommand = new AsyncDelegateCommand(ExecuteSelectedTests);
             ExecuteSelectedTestsInParallelCommand = new AsyncDelegateCommand(ExecuteSelectedTestsInParallel);
             TestGroups = new ObservableCollection<TestGroupViewModel>();
+            TestCategories = new ObservableCollection<TestCategoryViewModel>();
             
             ConfigFilePath = _settingsService.LastConfigFilePath;
 
@@ -55,6 +57,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             ProgressMax = totalAssemblyCount;
             ProgressValue = loadedAssemblyCount;
+        }
+
+        public string SearchString
+        {
+            get { return Get(() => SearchString); }
+            set { Set(() => SearchString, value); }
         }
 
         public string LogOutput
@@ -86,6 +94,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             get { return Get(() => IsProgressIndeterminate); }
             set { Set(() => IsProgressIndeterminate, value); }
         }
+
+        public ObservableCollection<TestCategoryViewModel> TestCategories { get; }
+
+        public IEnumerable<string> SelectedTestCategoryNames => TestCategories.Where(x => x.IsSelected).Select(x => x.Name);
+
+        public bool HasTestCategories => TestCategories.Any();
 
         public string ConfigFilePath
         {
@@ -145,6 +159,14 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
                 groupViewModel.PropertyChanged += OnGroupViewModelPropertyChanged;
             }
+
+            var testCategories = _testSessionContext.TestCases
+                .SelectMany(x => x.Categories)
+                .Distinct()
+                .Select(x => new TestCategoryViewModel(x));
+
+            TestCategories.ResetTo(testCategories);
+            FirePropertyChanged(nameof(HasTestCategories));
         }
 
         private void OnGroupViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -155,17 +177,17 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public async Task ExecuteTestGroup(TestGroupViewModel testGroup)
         {
-            await ExecuteTests(testGroup.Tests);
+            await ExecuteTests(testGroup.VisibleTests);
         }
 
         public async Task ExecuteTestGroupInParallel(TestGroupViewModel testGroup)
         {
-            await ExecuteTests(testGroup.Tests, allowParallelism: true);
+            await ExecuteTests(testGroup.VisibleTests, allowParallelism: true);
         }
 
         private async Task ExecuteAllTests()
         {
-            var testViewModels = TestGroups.SelectMany(x => x.Tests).ToList();
+            var testViewModels = TestGroups.SelectMany(x => x.VisibleTests).ToList();
 
             await ExecuteTests(testViewModels);
         }
@@ -173,7 +195,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         private async Task ExecuteSelectedTests()
         {
             var testViewModels = TestGroups
-                .SelectMany(x => x.Tests)
+                .SelectMany(x => x.VisibleTests)
                 .Where(x => x.IsSelected)
                 .ToList();
 
@@ -183,7 +205,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         private async Task ExecuteSelectedTestsInParallel()
         {
             var testViewModels = TestGroups
-                .SelectMany(x => x.Tests)
+                .SelectMany(x => x.VisibleTests)
                 .Where(x => x.IsSelected)
                 .ToList();
 

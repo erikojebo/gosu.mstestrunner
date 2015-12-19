@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Gosu.MsTestRunner.Core.Runner;
+using Gosu.MsTestRunner.UI.Extensions;
+using Gosu.MsTestRunner.UI.Infrastructure;
 using Gosu.MsTestRunner.UI.Mvvm;
 
 namespace Gosu.MsTestRunner.UI.ViewModels
@@ -19,6 +21,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             Name = name;
             Tests = new ObservableCollection<TestViewModel>(testCaseList.Select(x => new TestViewModel(x)));
+            VisibleTests = new ObservableCollection<TestViewModel>(Tests);
             ToggleExpandCollapseCommand = new DelegateCommand(ToggleExpandCollapse);
             ExecuteTestsCommand = new AsyncDelegateCommand(ExecuteTests);
             ExecuteTestsInParallelCommand = new AsyncDelegateCommand(ExecuteTestsInParallel);
@@ -29,6 +32,18 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             }
 
             TotalTestCaseCount = testCaseList.Count;
+
+            EventAggregator.TestCategorySelectionChanged += UpdateVisibleTests;
+            EventAggregator.SearchStringChanged += x => UpdateVisibleTests();
+        }
+
+        private void UpdateVisibleTests()
+        {
+            var visibleTestViewModels = Tests.Where(t => 
+                t.MatchesSearchString(_testListViewModel.SearchString) && 
+                t.MatchesCategories(_testListViewModel.SelectedTestCategoryNames));
+
+            VisibleTests.ResetTo(visibleTestViewModels);
         }
 
         private void OnTestViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,6 +100,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public string Name { get; }
         public bool HasName => !string.IsNullOrWhiteSpace(Name);
-        public ObservableCollection<TestViewModel> Tests { get; } 
+        public ObservableCollection<TestViewModel> Tests { get; }
+        public ObservableCollection<TestViewModel> VisibleTests { get; }
+
+        public void RefreshVisibleTestCases(string visibleCategories, string searchTerm)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

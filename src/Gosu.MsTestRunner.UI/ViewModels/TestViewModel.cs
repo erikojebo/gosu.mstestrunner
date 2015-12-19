@@ -1,4 +1,6 @@
-﻿using Gosu.MsTestRunner.Core.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Gosu.MsTestRunner.Core.Extensions;
 using Gosu.MsTestRunner.Core.Runner;
 using Gosu.MsTestRunner.UI.Infrastructure;
 using Gosu.MsTestRunner.UI.Mvvm;
@@ -108,6 +110,18 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public void ResetResult()
         {
             WasSuccessful = null;
+        }
+
+        public bool MatchesSearchString(string searchString)
+        {
+            return string.IsNullOrWhiteSpace(searchString) || Name.Contains(searchString) || ClassName.Contains(searchString);
+        }
+
+        public bool MatchesCategories(IEnumerable<string> selectedTestCategoryNames)
+        {
+            var testCategoryNames = selectedTestCategoryNames.ToList();
+
+            return !testCategoryNames.Any() || testCategoryNames.Intersect(TestCase.Categories).Any();
         }
     }
 }

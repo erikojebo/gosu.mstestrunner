@@ -29,7 +29,7 @@ namespace Gosu.MsTestRunner.Core.Runner
 
             Id = Guid.NewGuid();
             AppDomain = appDomain;
-            Categories = new List<string>();
+            Categories = _testMethodInfo.GetCustomAttributes<TestCategoryAttribute>().SelectMany(x => x.TestCategories).ToArray();
             Name = testMethodInfo.Name;
             AssemblyName = testMethodInfo.DeclaringType?.Assembly.GetName().Name;
             TestClassName = testMethodInfo.DeclaringType?.Name;
@@ -37,7 +37,7 @@ namespace Gosu.MsTestRunner.Core.Runner
         }
 
         public Guid Id { get; }
-        public IEnumerable<string> Categories { get; }
+        public string[] Categories { get; }
         public string Name { get; }
         public string TestClassName { get; }
         public string AssemblyName { get; }

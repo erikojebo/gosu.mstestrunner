@@ -85,6 +85,36 @@
                 <Button Command="{Binding ExecuteAllTestsCommand}">Run all tests</Button>
                 <Button Command="{Binding ExecuteSelectedTestsCommand}">Run selected tests</Button>
                 <Button Command="{Binding ExecuteSelectedTestsInParallelCommand}">Run selected tests in parallel</Button>
+
+                <TextBlock Text="Test categories" FontWeight="Bold" FontSize="16" Margin="0 10 0 0" Visibility="{Binding HasTestCategories}"/>
+                <ItemsControl ItemsSource="{Binding TestCategories}">
+                    <ItemsControl.ItemTemplate>
+                        <ItemContainerTemplate>
+                            <Button Command="{Binding ToggleSelectionCommand}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border BorderThickness="3 0 0 0" Padding="5 0 0 0" Margin="0 5 0 0">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <DataTrigger.Setters>
+                                                                <Setter Property="Background" Value="#dff0d8" />
+                                                                <Setter Property="BorderBrush" Value="#aaa" />
+                                                                <Setter Property="TextBlock.FontWeight" Value="Bold" />
+                                                            </DataTrigger.Setters>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Cursor="Hand" Text="{Binding Name}" FontSize="14" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </ItemContainerTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         
             <!-- Test groups -->
@@ -167,7 +197,7 @@
 
                             <!-- Tests -->
                             <ListBox
-                                ItemsSource="{Binding Tests}"
+                                ItemsSource="{Binding VisibleTests}"
                                 HorizontalContentAlignment="Stretch"
                                 Background="Transparent"
                                 BorderThickness="0"

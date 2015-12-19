@@ -87,5 +87,27 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
         {
             Thread.Sleep(4000);
         }
+
+        [TestCategory("TestCategory1")]
+        [TestCategory("TestCategory2")]
+        [TestMethod]
+        public void Test_with_category_1_and_2()
+        {
+            Assert.AreEqual(2, 2);
+        }
+
+        [TestCategory("TestCategory1")]
+        [TestMethod]
+        public void Test_with_category_1()
+        {
+            Assert.AreEqual(2, 2);
+        }
+
+        [TestCategory("TestCategory2")]
+        [TestMethod]
+        public void Test_with_category_2()
+        {
+            Assert.AreEqual(2, 2);    
+        }
     }
 }
