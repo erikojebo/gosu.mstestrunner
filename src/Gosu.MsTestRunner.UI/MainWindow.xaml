@@ -84,6 +84,7 @@
             
                 <Button Command="{Binding ExecuteAllTestsCommand}">Run all tests</Button>
                 <Button Command="{Binding ExecuteSelectedTestsCommand}">Run selected tests</Button>
+                <Button Command="{Binding ExecuteSelectedTestsInParallelCommand}">Run selected tests in parallel</Button>
             </StackPanel>
         
             <!-- Test groups -->
@@ -197,6 +198,10 @@
                                                 <Setter Property="Background" Value="#f2dede" />
                                                 <Setter Property="Foreground" Value="#a94442" />
                                             </DataTrigger>
+                                            <DataTrigger Binding="{Binding WasPartialFailure}" Value="True">
+                                                <Setter Property="Background" Value="#fcf5c7" />
+                                                <Setter Property="Foreground" Value="#bc7642" />
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding WasIgnored}" Value="True">
                                                 <Setter Property="Background" Value="#ececec" />
                                                 <Setter Property="Foreground" Value="#a0a0a0" />
@@ -239,6 +244,9 @@
                                                 
                                                     <Image Source="{StaticResource IgnoredIcon}" 
                                                            Visibility="{Binding Path=WasIgnored, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                
+                                                    <Image Source="{StaticResource WarningIcon}" 
+                                                           Visibility="{Binding Path=WasPartialFailure, Converter={StaticResource BoolToVisibilityConverter}}" />
                                                 
                                                 </StackPanel>
                                                 

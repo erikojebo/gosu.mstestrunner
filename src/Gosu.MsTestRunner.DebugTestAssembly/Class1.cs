@@ -6,6 +6,14 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
     [TestClass]
     public class Class1
     {
+        private bool _failTearDown;
+
+        [TestInitialize]
+        public void SetUp()
+        {
+            _failTearDown = false;
+        }
+
         [TestMethod]
         public void Successful_test()
         {
@@ -37,6 +45,21 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
         public void Ignored_test()
         {
             
+        }
+
+        [TestMethod]
+        public void Succeeding_test_with_failing_tear_down()
+        {
+            _failTearDown = true;
+
+            Assert.IsFalse(false);
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            if (_failTearDown)
+                throw new InvalidOperationException("Configured to fail in the tear down");
         }
     }
 }

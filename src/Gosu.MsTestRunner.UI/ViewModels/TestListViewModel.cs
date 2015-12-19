@@ -30,6 +30,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             InitializeTestListCommand = new AsyncDelegateCommand(InitializeTestList);
             ExecuteAllTestsCommand = new AsyncDelegateCommand(ExecuteAllTests);
             ExecuteSelectedTestsCommand = new AsyncDelegateCommand(ExecuteSelectedTests);
+            ExecuteSelectedTestsInParallelCommand = new AsyncDelegateCommand(ExecuteSelectedTestsInParallel);
             TestGroups = new ObservableCollection<TestGroupViewModel>();
             
             ConfigFilePath = _settingsService.LastConfigFilePath;
@@ -112,6 +113,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public AsyncDelegateCommand InitializeTestListCommand { get; }
         public AsyncDelegateCommand ExecuteAllTestsCommand { get; }
         public AsyncDelegateCommand ExecuteSelectedTestsCommand { get; }
+        public AsyncDelegateCommand ExecuteSelectedTestsInParallelCommand { get; }
 
         public async Task InitializeTestList()
         {
@@ -176,6 +178,16 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 .ToList();
 
             await ExecuteTests(testViewModels);
+        }
+
+        private async Task ExecuteSelectedTestsInParallel()
+        {
+            var testViewModels = TestGroups
+                .SelectMany(x => x.Tests)
+                .Where(x => x.IsSelected)
+                .ToList();
+
+            await ExecuteTests(testViewModels, allowParallelism: true);
         }
 
         private async Task ExecuteTests(IEnumerable<TestViewModel> testViewModels, bool allowParallelism = false)

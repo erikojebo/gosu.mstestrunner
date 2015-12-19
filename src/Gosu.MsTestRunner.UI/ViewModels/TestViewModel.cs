@@ -35,6 +35,12 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             private set { Set(() => WasFailure, value); }
         }
 
+        public bool? WasPartialFailure
+        {
+            get { return Get(() => WasPartialFailure); }
+            private set { Set(() => WasPartialFailure, value); }
+        }
+
         public bool? WasIgnored
         {
             get { return Get(() => WasIgnored); }
@@ -80,6 +86,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 WasSuccessful = testResult.WasSuccessful;
                 IsTestExecuting = false;
                 TestResultMessage = testResult.CombinedMessage;
+                WasPartialFailure = !testResult.WasIgnored && (testResult.WasInitializeSuccessful == false || testResult.WasCleanUpSuccessful == false);
             });
         }
 
