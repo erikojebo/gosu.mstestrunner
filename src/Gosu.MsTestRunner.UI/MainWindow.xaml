@@ -264,7 +264,7 @@
             <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
 
             <ScrollViewer x:Name="LogScrollViewer" Grid.Column="3">
-                <TextBlock Text="{Binding Log}" Margin="10 0 10 10" />
+                <TextBlock Text="{Binding LogOutput}" Margin="10 0 10 10" FontSize="14" TextWrapping="Wrap" />
             </ScrollViewer>
         </Grid>
     </DockPanel>

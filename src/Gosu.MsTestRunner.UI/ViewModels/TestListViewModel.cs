@@ -39,6 +39,13 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             _testRunner.TestCaseFinished += OnTestCaseFinished;
             _testRunner.TestCaseStarting += OnTestCaseStarting;
             IsProgressIndeterminate = true;
+
+            EventAggregator.TestViewModelSelected += OnTestViewModelSelected;
+        }
+
+        private void OnTestViewModelSelected(TestViewModel testViewModel)
+        {
+            LogOutput = testViewModel.TestResultMessage;
         }
 
         private void OnTestSessionContextLoaderProgressChanged(int loadedAssemblyCount, int totalAssemblyCount)
@@ -49,10 +56,10 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             ProgressValue = loadedAssemblyCount;
         }
 
-        public string Log
+        public string LogOutput
         {
-            get { return Get(() => Log); }
-            set { Set(() => Log, value); }
+            get { return Get(() => LogOutput); }
+            set { Set(() => LogOutput, value); }
         }
 
         public string Status
@@ -209,7 +216,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Log += Environment.NewLine + string.Format(message, formatParams);
+                LogOutput += Environment.NewLine + string.Format(message, formatParams);
             });
         }
 

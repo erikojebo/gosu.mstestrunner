@@ -1,9 +1,10 @@
 ﻿using Gosu.MsTestRunner.Core.Runner;
+using Gosu.MsTestRunner.UI.Infrastructure;
 using Gosu.MsTestRunner.UI.Mvvm;
 
 namespace Gosu.MsTestRunner.UI.ViewModels
 {
-    internal class TestViewModel : ViewModelBase
+    public class TestViewModel : ViewModelBase
     {
         public TestViewModel(TestCase testCase)
         {
@@ -46,10 +47,24 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             set { Set(() => IsTestExecuting, value); }
         }
 
+        public string TestResultMessage
+        {
+            get { return Get(() => TestResultMessage); }
+            set { Set(() => TestResultMessage, value); }
+        }
+
         public bool IsSelected
         {
             get { return Get(() => IsSelected); }
-            set { Set(() => IsSelected, value); }
+            set
+            {
+                bool wasSelected = value && !IsSelected;
+
+                Set(() => IsSelected, value);
+
+                if (wasSelected)
+                    EventAggregator.PublishTestViewModelSelected(this);
+            }
         }
 
         public string Name { get; }
@@ -64,6 +79,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
                 WasIgnored = testResult.WasIgnored;
                 WasSuccessful = testResult.WasSuccessful;
                 IsTestExecuting = false;
+                TestResultMessage = testResult.CombinedMessage;
             });
         }
 

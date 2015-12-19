@@ -102,12 +102,12 @@ namespace Gosu.MsTestRunner.Core.Runner
                 else
                 {
                     testResult.WasSuccessful = false;
-                    testResult.Message = $"Unexpected exception thrown. Exception: {actualException}";
+                    testResult.TestExecutionMessage = $"Unexpected exception thrown. Exception: {actualException}";
                 }
             }
             catch (Exception ex)
             {
-                testResult.Message = $"Test failed. Exception: {ex}";
+                testResult.TestExecutionMessage = $"Test failed. Exception: {ex}";
                 testResult.WasSuccessful = false;
             }
 
