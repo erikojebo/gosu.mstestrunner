@@ -69,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner\AssemblyRunner.cs" />
     <Compile Include="Runner\AssemblyTestCaseLoader.cs" />
+    <Compile Include="Runner\ParallelExtensions.cs" />
     <Compile Include="Runner\TestCase.cs" />
     <Compile Include="Runner\TestCaseRunner.cs" />
     <Compile Include="Runner\TestResult.cs" />

@@ -151,7 +151,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public async Task ExecuteTestGroupInParallel(TestGroupViewModel testGroup)
         {
-            await ExecuteTests(testGroup.Tests);
+            await ExecuteTests(testGroup.Tests, allowParallelism: true);
         }
 
         private async Task ExecuteAllTests()
@@ -171,7 +171,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             await ExecuteTests(testViewModels);
         }
 
-        private async Task ExecuteTests(IEnumerable<TestViewModel> testViewModels)
+        private async Task ExecuteTests(IEnumerable<TestViewModel> testViewModels, bool allowParallelism = false)
         {
             var testViewModelList = testViewModels.ToList();
 
@@ -188,7 +188,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             IsProgressIndeterminate = true;
 
-            await _testRunner.Run(testCasesToRun);
+            await _testRunner.Run(testCasesToRun, allowParallelism);
 
             _executingTestViewModelsByTestCaseId = null;
         }
