@@ -115,8 +115,32 @@
                                                 <Setter Property="VerticalAlignment" Value="Center" />
                                             </Style.Setters>
                                         </Style>
+                                        
+                                        <Style TargetType="Button">
+                                            <Style.Setters>
+                                                <Setter Property="Height" Value="16" />
+                                                <Setter Property="Cursor" Value="Hand" />
+                                                <Setter Property="Margin" Value="0 0 5 0" />
+                                            </Style.Setters>
+                                        </Style>
                                     </StackPanel.Resources>
                                 
+                                    <Button Command="{Binding Path=ExecuteTestsCommand}">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Image Source="{StaticResource PlayIcon}" ToolTip="Run tests in assembly" />
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+
+                                    <Button Command="{Binding Path=ExecuteTestsInParallelCommand}">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Image Source="{StaticResource PlayParallelIcon}" ToolTip="Run tests in assembly, in parallel" />
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    
                                     <TextBlock Foreground="#3c763d" Text="{Binding Path=SuccessfulTestCaseCount, Mode=OneWay}" />
                                     <TextBlock Foreground="#a94442" Text="{Binding Path=FailedTestCaseCount, Mode=OneWay}" />
                                     <TextBlock Foreground="#a0a0a0" Text="{Binding Path=IgnoredTestCaseCount, Mode=OneWay}" />

@@ -11,5 +11,7 @@
         <BitmapImage x:Key="FailIcon" UriSource="/Icons/fail.png" />
         <BitmapImage x:Key="IgnoredIcon" UriSource="/Icons/ignored.png" />
         <BitmapImage x:Key="WarningIcon" UriSource="/Icons/warning.png" />
+        <BitmapImage x:Key="PlayIcon" UriSource="/Icons/arrow-right.png" />
+        <BitmapImage x:Key="PlayParallelIcon" UriSource="/Icons/arrow-right-double.png" />
     </Application.Resources>
 </Application>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Gosu.MsTestRunner.Core.Runner;
 using Gosu.MsTestRunner.UI.Mvvm;
 
@@ -9,13 +10,18 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 {
     internal class TestGroupViewModel : ViewModelBase
     {
-        public TestGroupViewModel(string name, IEnumerable<TestCase> testCases)
+        private readonly TestListViewModel _testListViewModel;
+
+        public TestGroupViewModel(string name, IEnumerable<TestCase> testCases, TestListViewModel testListViewModel)
         {
+            _testListViewModel = testListViewModel;
             var testCaseList = testCases.ToList();
 
             Name = name;
             Tests = new ObservableCollection<TestViewModel>(testCaseList.Select(x => new TestViewModel(x)));
             ToggleExpandCollapseCommand = new DelegateCommand(ToggleExpandCollapse);
+            ExecuteTestsCommand = new AsyncDelegateCommand(ExecuteTests);
+            ExecuteTestsInParallelCommand = new AsyncDelegateCommand(ExecuteTestsInParallel);
 
             foreach (var testViewModel in Tests)
             {
@@ -41,10 +47,20 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             IsExpanded = !IsExpanded;
         }
 
+        public async Task ExecuteTests()
+        {
+            await _testListViewModel.ExecuteTestGroup(this);
+        }
+
+        public async Task ExecuteTestsInParallel()
+        {
+            await _testListViewModel.ExecuteTestGroupInParallel(this);
+        }
+
         public int SuccessfulTestCaseCount => Tests.Count(x => x.WasSuccessful == true);
         public int FailedTestCaseCount => Tests.Count(x => x.WasSuccessful == false);
         public int IgnoredTestCaseCount => Tests.Count(x => x.WasIgnored == true);
-        public int ExecutedTestCaseCount => Tests.Count(x => x.HasExecuted);
+        public int ExecutedTestCaseCount => Tests.Count(x => x.HasExecuted || x.WasIgnored == true);
 
         public static string SuccessfulTestCaseCountPropertyName => nameof(SuccessfulTestCaseCount);
         public static string FailedTestCaseCountPropertyName => nameof(FailedTestCaseCount);
@@ -52,6 +68,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public static string ExecutedTestCaseCountPropertyName => nameof(ExecutedTestCaseCount);
 
         public DelegateCommand ToggleExpandCollapseCommand { get; }
+        public AsyncDelegateCommand ExecuteTestsCommand { get; }
+        public AsyncDelegateCommand ExecuteTestsInParallelCommand { get; }
 
         public bool IsExpanded
         {

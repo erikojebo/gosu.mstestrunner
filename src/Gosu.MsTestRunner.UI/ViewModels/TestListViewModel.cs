@@ -130,7 +130,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             foreach (var group in testCaseGroup)
             {
                 var testCases = group.OrderBy(x => x.TestClassName).ThenBy(x => x.DisplayName);
-                var groupViewModel = new TestGroupViewModel(group.Key, testCases);
+                var groupViewModel = new TestGroupViewModel(group.Key, testCases, this);
 
                 TestGroups.Add(groupViewModel);
 
@@ -142,6 +142,16 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         {
             if (e.PropertyName == TestGroupViewModel.ExecutedTestCaseCountPropertyName && _executingTestViewModelsByTestCaseId != null)
                 ProgressValue = _executingTestViewModelsByTestCaseId.Values.Count(x => x.HasExecuted);
+        }
+
+        public async Task ExecuteTestGroup(TestGroupViewModel testGroup)
+        {
+            await ExecuteTests(testGroup.Tests);
+        }
+
+        public async Task ExecuteTestGroupInParallel(TestGroupViewModel testGroup)
+        {
+            await ExecuteTests(testGroup.Tests);
         }
 
         private async Task ExecuteAllTests()
@@ -161,18 +171,20 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             await ExecuteTests(testViewModels);
         }
 
-        private async Task ExecuteTests(List<TestViewModel> testViewModels)
+        private async Task ExecuteTests(IEnumerable<TestViewModel> testViewModels)
         {
-            foreach (var testViewModel in testViewModels)
+            var testViewModelList = testViewModels.ToList();
+
+            foreach (var testViewModel in testViewModelList)
             {
                 testViewModel.ResetResult();
             }
 
-            _executingTestViewModelsByTestCaseId = testViewModels.ToDictionary(x => x.TestCase.Id);
+            _executingTestViewModelsByTestCaseId = testViewModelList.ToDictionary(x => x.TestCase.Id);
 
             ProgressMax = _executingTestViewModelsByTestCaseId.Count;
 
-            var testCasesToRun = testViewModels.Select(x => x.TestCase).ToList();
+            var testCasesToRun = testViewModelList.Select(x => x.TestCase).ToList();
 
             IsProgressIndeterminate = true;
 
