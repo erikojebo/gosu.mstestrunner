@@ -30,7 +30,7 @@ namespace Gosu.MsTestRunner.Core.Runner
             Id = Guid.NewGuid();
             AppDomain = appDomain;
             Categories = new List<string>();
-            DisplayName = testMethodInfo.Name.Replace("_", " ");
+            Name = testMethodInfo.Name;
             AssemblyName = testMethodInfo.DeclaringType?.Assembly.GetName().Name;
             TestClassName = testMethodInfo.DeclaringType?.Name;
             IsIgnored = testMethodInfo.GetCustomAttribute<IgnoreAttribute>() != null;
@@ -38,7 +38,7 @@ namespace Gosu.MsTestRunner.Core.Runner
 
         public Guid Id { get; }
         public IEnumerable<string> Categories { get; }
-        public string DisplayName { get; }
+        public string Name { get; }
         public string TestClassName { get; }
         public string AssemblyName { get; }
         public bool IsIgnored { get; set; }

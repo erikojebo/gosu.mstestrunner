@@ -1,4 +1,5 @@
-﻿using Gosu.MsTestRunner.Core.Runner;
+﻿using Gosu.MsTestRunner.Core.Extensions;
+using Gosu.MsTestRunner.Core.Runner;
 using Gosu.MsTestRunner.UI.Infrastructure;
 using Gosu.MsTestRunner.UI.Mvvm;
 
@@ -9,8 +10,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public TestViewModel(TestCase testCase)
         {
             TestCase = testCase;
-            Name = testCase.DisplayName;
-            ClassName = testCase.TestClassName;
+            Name = testCase.Name.PrettifyIdentifier();
+            ClassName = testCase.TestClassName.PrettifyIdentifier();
             Description = "";
         }
 

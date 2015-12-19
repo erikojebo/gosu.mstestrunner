@@ -55,6 +55,7 @@
     <Compile Include="Config\RunnerConfiguration.cs" />
     <Compile Include="Exceptions\GosuMsTestRunnerException.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Listeners\Events\EventAggregator.cs" />
     <Compile Include="Listeners\Events\TestFailure.cs" />
     <Compile Include="Listeners\Events\TestPass.cs" />

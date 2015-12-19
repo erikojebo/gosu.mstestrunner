@@ -67,5 +67,11 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
         {
             Assert.IsTrue(true);
         }
+
+        [TestMethod]
+        public void CamelCaseTestName()
+        {
+            Assert.IsTrue(true);
+        }
     }
 }

@@ -138,7 +138,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             foreach (var group in testCaseGroup)
             {
-                var testCases = group.OrderBy(x => x.TestClassName).ThenBy(x => x.DisplayName);
+                var testCases = group.OrderBy(x => x.TestClassName).ThenBy(x => x.Name);
                 var groupViewModel = new TestGroupViewModel(group.Key, testCases, this);
 
                 TestGroups.Add(groupViewModel);
