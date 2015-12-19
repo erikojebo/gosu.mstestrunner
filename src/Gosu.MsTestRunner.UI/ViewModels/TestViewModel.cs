@@ -10,6 +10,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         {
             TestCase = testCase;
             Name = testCase.DisplayName;
+            ClassName = testCase.TestClassName;
             Description = "";
         }
 
@@ -74,6 +75,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         }
 
         public string Name { get; }
+        public string ClassName { get; }
         public string Description { get; }
         public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
         public bool HasExecuted => WasSuccessful != null;

@@ -85,7 +85,7 @@ namespace Gosu.MsTestRunner.Core.Runner
                 };
             }
 
-            var testResult = new TestResult()
+            var testResult = new TestResult
             {
                 WasInitializeSuccessful = true,
             };

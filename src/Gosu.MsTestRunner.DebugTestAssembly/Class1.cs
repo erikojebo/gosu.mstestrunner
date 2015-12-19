@@ -61,5 +61,11 @@ namespace Gosu.MsTestRunner.DebugTestAssembly
             if (_failTearDown)
                 throw new InvalidOperationException("Configured to fail in the tear down");
         }
+
+        [TestMethod]
+        public void Test_with_a_very_long_name_that_will_probably_reach_the_right_side_of_the_test_runner_window_where_the_names_are_shown()
+        {
+            Assert.IsTrue(true);
+        }
     }
 }
