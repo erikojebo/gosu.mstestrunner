@@ -62,7 +62,15 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         public string SearchString
         {
             get { return Get(() => SearchString); }
-            set { Set(() => SearchString, value); }
+            set
+            {
+                var hasChanged = value != SearchString;
+
+                Set(() => SearchString, value);
+
+                if (hasChanged)
+                    EventAggregator.PublishSearchStringChanged(SearchString);
+            }
         }
 
         public string LogOutput

@@ -86,14 +86,17 @@
                 <Button Command="{Binding ExecuteSelectedTestsCommand}">Run selected tests</Button>
                 <Button Command="{Binding ExecuteSelectedTestsInParallelCommand}">Run selected tests in parallel</Button>
 
-                <TextBlock Text="Test categories" FontWeight="Bold" FontSize="16" Margin="0 10 0 0" Visibility="{Binding HasTestCategories}"/>
-                <ItemsControl ItemsSource="{Binding TestCategories}">
+                <TextBlock Text="Test categories" FontWeight="Bold" FontSize="16" Margin="0 10 0 0" Visibility="{Binding HasTestCategories, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <ItemsControl 
+                    ItemsSource="{Binding TestCategories}" 
+                    Visibility="{Binding HasTestCategories, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Margin="0 0 0 20">
                     <ItemsControl.ItemTemplate>
                         <ItemContainerTemplate>
                             <Button Command="{Binding ToggleSelectionCommand}">
                                 <Button.Template>
                                     <ControlTemplate>
-                                        <Border BorderThickness="3 0 0 0" Padding="5 0 0 0" Margin="0 5 0 0">
+                                        <Border BorderThickness="3 0 0 0" Padding="5 0 0 0">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Style.Triggers>
@@ -107,7 +110,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Cursor="Hand" Text="{Binding Name}" FontSize="14" />
+                                            <TextBlock Cursor="Hand" Text="{Binding Name}" Margin="0 2 0 2" FontSize="14" />
                                         </Border>
                                     </ControlTemplate>
                                 </Button.Template>
@@ -115,6 +118,9 @@
                         </ItemContainerTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+                
+                <TextBlock Text="Search / filter" FontWeight="Bold" FontSize="16" />
+                <TextBox Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         
             <!-- Test groups -->

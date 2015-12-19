@@ -114,7 +114,10 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public bool MatchesSearchString(string searchString)
         {
-            return string.IsNullOrWhiteSpace(searchString) || Name.Contains(searchString) || ClassName.Contains(searchString);
+            return 
+                string.IsNullOrWhiteSpace(searchString) || 
+                Name.ToLower().Contains(searchString.ToLower()) || 
+                ClassName.ToLower().Contains(searchString.ToLower());
         }
 
         public bool MatchesCategories(IEnumerable<string> selectedTestCategoryNames)
