@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gosu.MsTestRunner.Core.Extensions;
 using Gosu.MsTestRunner.Core.Runner;
@@ -114,10 +115,15 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
         public bool MatchesSearchString(string searchString)
         {
-            return 
-                string.IsNullOrWhiteSpace(searchString) || 
-                Name.ToLower().Contains(searchString.ToLower()) || 
-                ClassName.ToLower().Contains(searchString.ToLower());
+            return
+                string.IsNullOrWhiteSpace(searchString) ||
+                IsMatch(searchString, Name) ||
+                IsMatch(searchString, ClassName);
+        }
+
+        private bool IsMatch(string searchString, string stringToMatchAgainst)
+        {
+            return stringToMatchAgainst.ToLower().Contains(searchString.ToLower());
         }
 
         public bool MatchesCategories(IEnumerable<string> selectedTestCategoryNames)
@@ -125,6 +131,11 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             var testCategoryNames = selectedTestCategoryNames.ToList();
 
             return !testCategoryNames.Any() || testCategoryNames.Intersect(TestCase.Categories).Any();
+        }
+
+        public bool Matches(IEnumerable<Predicate<TestViewModel>> testFilterPredicates)
+        {
+            return !testFilterPredicates.Any() || testFilterPredicates.Any(x => x(this));
         }
     }
 }

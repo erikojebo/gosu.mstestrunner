@@ -60,6 +60,7 @@
     <Compile Include="Infrastructure\EventAggregator.cs" />
     <Compile Include="Infrastructure\ProgressBarBehaviours.cs" />
     <Compile Include="Mvvm\AsyncDelegateCommand.cs" />
+    <Compile Include="ViewModels\TestResultFilterViewModel.cs" />
     <Compile Include="ViewModels\TestCategoryViewModel.cs" />
     <Compile Include="ViewModels\TestGroupViewModel.cs" />
     <Compile Include="ViewModels\TestListViewModel.cs" />

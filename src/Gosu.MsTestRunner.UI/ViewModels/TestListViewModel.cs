@@ -34,6 +34,9 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             ExecuteSelectedTestsInParallelCommand = new AsyncDelegateCommand(ExecuteSelectedTestsInParallel);
             TestGroups = new ObservableCollection<TestGroupViewModel>();
             TestCategories = new ObservableCollection<TestCategoryViewModel>();
+            TestResultFilters = new ObservableCollection<TestResultFilterViewModel>();
+
+            InitializeTestResultFilters();
             
             ConfigFilePath = _settingsService.LastConfigFilePath;
 
@@ -41,9 +44,18 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             _testRunner.TestCaseFinished += OnTestCaseFinished;
             _testRunner.TestCaseStarting += OnTestCaseStarting;
+
             IsProgressIndeterminate = true;
 
             EventAggregator.TestViewModelSelected += OnTestViewModelSelected;
+        }
+
+        private void InitializeTestResultFilters()
+        {
+            TestResultFilters.Add(new TestResultFilterViewModel("Passed", x => x.WasSuccessful == true));
+            TestResultFilters.Add(new TestResultFilterViewModel("Failed", x => x.WasSuccessful == false));
+            TestResultFilters.Add(new TestResultFilterViewModel("Ignored", x => x.WasIgnored == true));
+            TestResultFilters.Add(new TestResultFilterViewModel("Warning", x => x.WasPartialFailure == true));
         }
 
         private void OnTestViewModelSelected(TestViewModel testViewModel)
@@ -103,9 +115,11 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             set { Set(() => IsProgressIndeterminate, value); }
         }
 
+        public ObservableCollection<TestResultFilterViewModel> TestResultFilters { get; }
         public ObservableCollection<TestCategoryViewModel> TestCategories { get; }
 
         public IEnumerable<string> SelectedTestCategoryNames => TestCategories.Where(x => x.IsSelected).Select(x => x.Name);
+        public IEnumerable<Predicate<TestViewModel>> SelectedTestFilterPredicates => TestResultFilters.Where(x => x.IsSelected).Select(x => x.Predicate);
 
         public bool HasTestCategories => TestCategories.Any();
 
@@ -240,6 +254,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
             await _testRunner.Run(testCasesToRun, allowParallelism);
 
             _executingTestViewModelsByTestCaseId = null;
+
+            EventAggregator.PublishTestResultFilterSelectionChanged();
         }
 
         private void OnTestCaseStarting(TestCase testCase)

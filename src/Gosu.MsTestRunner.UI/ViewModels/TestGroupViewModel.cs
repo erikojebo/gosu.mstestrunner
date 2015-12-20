@@ -33,6 +33,7 @@ namespace Gosu.MsTestRunner.UI.ViewModels
 
             TotalTestCaseCount = testCaseList.Count;
 
+            EventAggregator.TestResultFilterSelectionChanged += UpdateVisibleTests;
             EventAggregator.TestCategorySelectionChanged += UpdateVisibleTests;
             EventAggregator.SearchStringChanged += x => UpdateVisibleTests();
         }
@@ -41,7 +42,8 @@ namespace Gosu.MsTestRunner.UI.ViewModels
         {
             var visibleTestViewModels = Tests.Where(t => 
                 t.MatchesSearchString(_testListViewModel.SearchString) && 
-                t.MatchesCategories(_testListViewModel.SelectedTestCategoryNames));
+                t.MatchesCategories(_testListViewModel.SelectedTestCategoryNames) && 
+                t.Matches(_testListViewModel.SelectedTestFilterPredicates));
 
             VisibleTests.ResetTo(visibleTestViewModels);
         }
